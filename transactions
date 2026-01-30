@@ -1,0 +1,44 @@
+SQL script to analyze transactions in BLockchain
+
+
+WITH raw_transfers AS (
+    -- Celo Data (cKES, eXOF, cZAR)
+    SELECT 
+        CASE 
+            WHEN contract_address = 0x456a3D042C0DbD3db53D5489e98dFb038553B0d0 THEN 'cKES (Celo)'
+            WHEN contract_address = 0x73F93dcc49cB8A239e2032663e9475dd5ef29A08 THEN 'eXOF (Celo)'
+            WHEN contract_address = 0x4c35853A3B4e647fD266f4de678dCc8fEC410BF6 THEN 'cZAR (Celo)'
+        END AS symbol,
+        cast(bytearray_to_uint256(data) AS double) / 1e18 AS amount_usd_proxy -- Assuming roughly 1:1 or native units for distribution shape
+    FROM celo.logs
+    WHERE contract_address IN (
+        0x456a3D042C0DbD3db53D5489e98dFb038553B0d0,
+        0x73F93dcc49cB8A239e2032663e9475dd5ef29A08,
+        0x4c35853A3B4e647fD266f4de678dCc8fEC410BF6
+    )
+    AND topic0 = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
+    AND block_time > now() - INTERVAL '3' month
+
+    UNION ALL
+
+    -- Base Data (cNGN)
+    SELECT 
+        'cNGN (Base)' AS symbol,
+        cast(bytearray_to_uint256(data) AS double) / 1e6 AS amount_usd_proxy
+    FROM base.logs
+    WHERE contract_address = 0x46C85152bFe9f96829aA94755D9f915F9B10EF5F
+    AND topic0 = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
+    AND block_time > now() - INTERVAL '3' month
+)
+
+SELECT 
+    symbol,
+    COUNT(*) as total_tx_count,
+    AVG(amount_usd_proxy) as mean_tx_size,
+    approx_percentile(amount_usd_proxy, 0.5) as median_tx_size, -- 50th percentile
+    approx_percentile(amount_usd_proxy, 0.25) as p25_small_tx_size, -- Lower quartile
+    approx_percentile(amount_usd_proxy, 0.90) as p90_whale_tx_size -- Top 10% cutoff
+FROM raw_transfers
+WHERE amount_usd_proxy > 0.01 -- Filter out "dust" attacks
+GROUP BY 1
+ORDER BY 1
