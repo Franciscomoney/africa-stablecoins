@@ -1,5 +1,6 @@
 Methodology Replication Process
 Step 1: Identify Target Tokens First, identify the following contract addresses and their corresponding assets on the Celo network:
+https://celoscan.io/token/0x4c35853a3b4e647fd266f4de678dcc8fec410bf6
 
 cKES (Celo): 0x456a3D042C0DbD3db53D5489e98dFb038553B0d0
 
@@ -18,3 +19,5 @@ cZAR: View Token Contract
 Step 3: Data Extraction To simplify the process of downloading transactions for the specific period, use the custom script created for this analysis:
 
 Dune Analytics Query: Run Query #6294268
+
+https://dune.com/queries/6294268/
