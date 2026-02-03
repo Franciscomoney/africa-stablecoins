@@ -1,0 +1,20 @@
+Methodology Replication Process
+Step 1: Identify Target Tokens First, identify the following contract addresses and their corresponding assets on the Celo network:
+
+cKES (Celo): 0x456a3D042C0DbD3db53D5489e98dFb038553B0d0
+
+eXOF (Celo): 0x73F93dcc49cB8A239e2032663e9475dd5ef29A08
+
+cZAR (Celo): 0x4c35853A3B4e647fD266f4de678dCc8fEC410BF6
+
+Step 2: Transaction Analysis Analyze the transaction history for each token using the official Celo block explorer (Celoscan):
+
+cKES: View Filtered Transactions
+
+eXOF: View Token Contract
+
+cZAR: View Token Contract
+
+Step 3: Data Extraction To simplify the process of downloading transactions for the specific period, use the custom script created for this analysis:
+
+Dune Analytics Query: Run Query #6294268
